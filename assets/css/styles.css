@@ -1,0 +1,9 @@
+html,body{
+    height:         100%;
+}
+#content-wrapper{
+    background-size: cover;
+}
+/* body{
+    padding-left:        16%;
+} */
