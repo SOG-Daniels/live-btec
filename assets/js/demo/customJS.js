@@ -19,6 +19,23 @@ var personalRefCount = 2;
 
 /////////////function definitions starts///////////////////
 
+//function pulls notifications count and displays notifcations
+function get_notification_count(){
+  
+    $.post( base_url+"main/get_user_notifications", function(data) {
+        // $( "#notication-count" ).innerhtml( data );
+        var result = JSON.parse(data);
+        // console.log(result);
+        if (result.activeNotificationCount > 0){
+            $('#notification-count').show();
+            $('#notification-count').addClass('badge badge-danger badge-counter');
+            $('#notification-count').text(result.activeNotificationCount);
+        }else{
+            $('#notification-count').hide();
+            console.log('no notifications available');
+        }
+    });
+}
 //function sets the value of the inputCount that is used to enter the number of assesments//
 function setInputCount(value){
     inputCount = value;
@@ -1141,7 +1158,13 @@ $(document).ready(function() {
         e.preventDefault();
 
         $html = '<div class="row">';
-        $html += '<div class="col-12 col-md-12">';
+        $html += '<div class="col-12 col-md-4">';
+        $html += '<div class="form-check pt-2">';
+        $html += '<input type="checkbox" name="labels[label'+labelNum+'][sendNotification]" class="form-check-input" value="1" >';
+        $html += '<label class="form-check-label">Enable Notification</label>';
+        $html += '</div>';
+        $html += '</div>';
+        $html += '<div class="col-12 col-md-8">';
         $html +='<div class="input-group mb-3">';
         $html +='<div class="input-group-prepend">';
         $html +='<span class="input-group-text">';
@@ -1170,5 +1193,75 @@ $(document).ready(function() {
         // inputCount--;
 
     });
+  
+    //loading notification on alertbell clicked
+    $('#alertsDropdown').click(function (e){
+        $.post( base_url+"main/get_user_notifications", function(data) {
+            // $( "#notication-count" ).innerhtml( data );
+            var result = JSON.parse(data);
+            const months = ["January", "February", "March","April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            // console.log(result);
+            if (result.notifications.length > 0){
+                //setting notifications
+                var html = '';
 
+                if(result.notifications.length > 6){
+                    // $('#notification-list')
+                }
+
+                $.each(result.notifications, function(key, value){
+                    let dateTime = value.created_on.split(" ");
+                    let date = new Date(dateTime[0]);
+                    let formatted_date =  months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
+                    
+                    html += 
+                    '<a id="notice-'+value.event_id+'"class="dropdown-item d-flex align-items-center notification '+((value.was_clicked == 1)? 'bg-light': '')+'" href="#">'+
+                        '<input type="hidden" class="notice-id" value="'+value.id+'">'+
+                        '<div class="mr-3">'+
+                            '<div class="icon-circle '+value.icon_background_color+'">'+
+                            '<i class="'+value.icon+' text-white"></i>'+
+                            '</div>'+
+                        '</div>'+
+                        '<div>'+
+                        '<div class="small text-gray-500">'+ formatted_date +'</div>'+
+                            value.notice_title +
+                        '</div>'+
+                    '</a>';
+                });
+                
+                $('#notification-list').html(html);
+
+            }else{
+                var html = '';
+
+                let current_datetime = new Date();
+                let formatted_date =  months[current_datetime.getMonth()] + " " + current_datetime.getDate() + ", " + current_datetime.getFullYear();
+                
+                html += 
+                '<a class="dropdown-item d-flex align-items-center bg-light" href="#">'+
+                    '<div class="mr-3">'+
+                        '<div class="icon-circle bg-info">'+
+                        '<i class="fa fa-info text-white"></i>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div>'+
+                    '<div class="small text-gray-500">'+formatted_date+'</div>'+
+                        'You are up to date!'+
+                    '</div>'+
+                '</a>';
+                $('#notification-list').html(html);
+                // no notifications available
+                console.log('no notifications for list');
+            }
+
+            // if (result.activeNotificationCount > 0){
+            //     $('#notification-count').show();
+            //     $('#notification-count').addClass('badge badge-danger badge-counter');
+            //     $('#notification-count').text(result.activeNotificationCount);
+            // }else{
+            //     $('#notification-count').hide();
+            //     console.log('no notifications available');
+            // }
+        });
+    });
 });

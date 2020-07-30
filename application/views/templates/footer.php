@@ -413,7 +413,26 @@
       </div>
     </div>
   </div>
+  <!-- Notification Details modal -->
+  <!-- <div class="modal fade" id="notice-detail-modal" tabindex="-1" role="dialog" aria-labelledby="notice-detail-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="notice-detail-title"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="notice-detail-body" class="modal-body">
 
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <!- <button type="button" class="btn btn-primary">Save changes</button> ->
+        </div>
+      </div>
+    </div>
+  </div> -->
 
 <!-- !END OF MODALS -->
   
@@ -474,25 +493,35 @@
 
   <!-- FUllCalendar with google calendar custom script -->
   <script src="<?php echo base_url()?>assets/js/gCalendar.js"></script>
+
   
   <!-- JS file for input files -->
   <script src="<?php echo base_url()?>assets/js/jQuery-file-upload-master.js"></script>
-
+  
   <script type="text/javascript">
       //declaring global variable
       var base_url = "<?php echo base_url(); ?>";
+      var calEventId = <?php echo (isset($calEventId)? $calEventId : 0)?>
       
       var PRIVI_SIZE = <?php echo (!empty($this->session->userdata('allPrivi'))? count($this->session->userdata('allPrivi')) : 0);?>;
 
 
       //setting up autocomplete by stating the controller that will perform the search
       //the autocomplete plugin will always submit it as a GET method reason being for having the '?' after the 'search'
-      $(document).ready(function(){
+      $(document).ready(function(e){
+        
+          //autocompletes search bar
           $( ".applicant" ).autocomplete({
             source: "<?php echo site_url('search?');?>"
           });
+
+          //calling notifcation count update every 1 seconds
+          setInterval(function(){
+            get_notification_count();
+          },
+          1000);
       });
-      // ?onload=handleClientLoad
+     
   </script>
     
 </body>

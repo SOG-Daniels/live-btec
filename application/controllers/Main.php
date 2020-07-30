@@ -15,7 +15,8 @@
             protected $programTables;
             protected $userIdent;
             protected $viewQuery;
-            
+            protected $notifications;
+            protected $activeNotificationCount; 
         //end of data members//
 
         public function __construct(){
@@ -62,7 +63,44 @@
                 'Administrative-Assistant' => 'admin_assistant'
             );
             
+            //gets notifcations and sets them to the protected datamembers
+            // $this->get_user_notifications();
+            
+            // $GLOBALS['notifications'] = $this->notifications;
+            // $GLOBALS['activeNotificationCount'] = $this->activeNotificationCount;
 
+        }
+        /**
+         * updated the notifcation in that it was clicked 
+         * 
+         * @access    public
+         * @param     notificationId The id of the notification 
+         *
+         * @return    NONE 
+         */ 
+        public function notification_clicked($notificationId = NULL){
+            
+            if( $this->is_session_set()){
+                //setting clicked status to notification
+
+                $set = array(
+                    'was_clicked' => 1
+                );
+                $where = array(
+                    'id' => $notificationId
+                );
+                if(!$this->user_model->update_notification($set, $where)){
+                    log_message('debug', 'Update_notification returned false when called in notification_clicked controller method');
+                    echo 0;
+                }else{
+                    echo $notificationId;
+                }
+                
+            }else{
+                // //sesion is not set 
+                // redirect('login');
+                echo -1;
+            }
         }
         /**
          * get_dashboard() loads the home view 
@@ -72,14 +110,53 @@
          *
          * @return    NONE 
          */ 
-        public function get_dashboard(){
-    
+        public function get_user_notifications(){
+            
             if( $this->is_session_set()){
                 
+                $this->notifications = $this->user_model->get_all_user_notifications($this->userId);
+                $this->activeNotificationCount = 0;
+                
+                foreach ($this->notifications as $notification){
+                    //loping to find all active notifications
+                    if ($notification['was_clicked'] == 0){
+                        $this->activeNotificationCount++;
+                    }
+                }
+                $data['notifications'] = $this->notifications;
+                $data['activeNotificationCount'] = $this->activeNotificationCount;
+
+                echo json_encode($data);
+
+            }else{
+                //sesion is not set 
+                // redirect('login');
+                echo -1;
+            }
+        }
+        /**
+         * get_dashboard() loads the home view 
+         * 
+         * @access    public
+         * @param     NONE
+         *
+         * @return    NONE 
+         */ 
+        public function get_dashboard(){//$calEventId = NULL){
+    
+            if( $this->is_session_set()){
+               
+                // $this->data['notifications'] = $this->notifications;
+                // $this->data['activeNotificationCount'] = $this->activeNotificationCount;
                 $this->data['title'] = 'Dashboard';// title of page
                 $this->data['active'] = 'dashboard';// setting the dashboard as current option on sidebar
                 $this->data['name'] = $this->session->userdata('name');// name of the users that logged 
                 $this->data['eventLabels'] = $this->user_model->get_event_labels();
+                $this->data['calEventId'] = 0; 
+                
+                if (isset($calEventId)){
+                    $this->data['calEventId'] = $calEventId;
+                }
 
                 //displaying the homepage
                 $this->load->view('templates/header', $this->data);
@@ -88,17 +165,11 @@
                 $this->load->view('pageContent/home', $this->data);//pageContent
                 $this->load->view('templates/footer', $this->data);
                 
-                
-                //die('Hey Welcome! It Works!');
 
             }else{
-            //sesion is not set 
-                //die('   Hey Welcome! It Works! before redirect!');
+                //sesion is not set 
                 redirect('login');
             }
-
-            
-            
         }
         /**
          * profile() displays all info the system has on the user on a view 
@@ -2966,9 +3037,48 @@
                 if (!empty($this->input->post())){
 
                     //send update request
-                $result = $this->user_model->update_cal_event($this->input->post(NULL, TRUE));
+                    $result = $this->user_model->update_cal_event($this->input->post(NULL, TRUE));
                     
                     if ($result === TRUE){
+
+                        $label = array();
+
+                        //check if calendar event label notification is set
+                        $labels = $this->user_model->get_event_labels();
+                        
+                        //finding the event label the updated event has
+                        foreach ($labels as $key => $array){
+                            if ($this->input->post('color') == $array['color']){
+                                $label = $labels[$key];
+                                break;
+                            }
+                        }
+                        if ($label['sendNotification'] == 1){
+                            //set notification
+                        }
+                        //setting notifications for all users
+                        $users = $this->user_model->get_user_list();
+                        
+                        foreach ($users as $key => $user){
+                            //inserting notifications for user
+                            if ($user['status'] == 1){
+                                $insert = array(
+                                    'event_id' => $this->input->post('eventId'),
+                                    'icon' => 'fas fa-calendar-alt',
+                                    'icon_background_color' => 'bg-info',
+                                    'notice_title' => 'A "<span style="color: '.$label['color'].';">'.$this->input->post('title').'</span>" event was updated! Click to see event.',
+                                    'created_for' => $user['id']
+                                );
+                                $result = $this->user_model->set_notification($insert);
+                                
+                                if(!$result){
+                                    log_message('debug', 'Notification was not set for userID: '.$user['id'].',occured in update_cal_event inside main controller');
+                                }
+                            }
+                                
+                        }
+                        // echo json_encode($users);
+                        // echo json_encode($label);
                         echo 1;
                     }else{
                         echo 0;

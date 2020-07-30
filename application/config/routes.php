@@ -134,7 +134,6 @@ $route['search'] = 'main/autocomplete_search';
 //advance search route
 $route['advance-search'] = 'main/advance_search';
 
-
 ////////////////////// Main controller routes end///////////////////////
 
 //program setup page routes

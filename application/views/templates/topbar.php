@@ -1,5 +1,9 @@
 <?php 
     $imgPath = $this->session->userdata('imgPath');
+    // echo "<pre>";
+    // print_r($GLOBALS);
+    // echo "</pre>";
+  
 ?>
 <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -53,32 +57,80 @@
             </li>
 
             <!-- Nav Item - Alerts -->
-            <!-- <li class="nav-item dropdown no-arrow mx-1">
+            <li class="nav-item dropdown no-arrow mx-1">
               <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
-                <!- <!- Counter - Alerts -> ->
-                <span class="badge badge-danger badge-counter"><?php // notification count?></span>
+                <!-- Counter - Alerts -->
+                <span  id="notification-count">
+
+                </span>
+                <?php 
+                    // if (isset($GLOBALS['activeNotificationCount']) && $GLOBALS['activeNotificationCount'] > 0){
+                    //   echo '
+                    //   <span class="badge badge-danger badge-counter">'.(($GLOBALS['activeNotificationCount'] <= 9)? $GLOBALS['activeNotificationCount'] : '+9').'</span>
+                    //   ';
+                    // }
+                ?>
               </a>
-               <!- Dropdown - Alerts ->
-              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+               <!-- Dropdown - Alerts -->
+              <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in " aria-labelledby="alertsDropdown" style=" max-height: 600px;
+    overflow-y: auto;">
                 <h6 class="dropdown-header">
-                  Alerts Center
+                  Notifications
                 </h6>
-               
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                  <div class="mr-3">
-                    <div class="icon-circle bg-warning">
-                      <i class="fas fa-exclamation-triangle text-white"></i>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="small text-gray-500">December 2, 2019</div>
-                    Spending Alert: We've noticed unusually high spending for your account.
-                  </div>
-                </a>
-                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                <span id="notification-list" > 
+                </span>
+                <?php 
+
+                // echo date("Y-m-d");
+                // echo "<pre>";
+                // print_r($notifications);
+                // echo "</pre>";
+
+                  // if (!empty($GLOBALS['notifications'])){
+                  //   //has notifications
+                  //   foreach ($GLOBALS['notifications'] as $notification){
+                  //     $date = new DateTime($notification['created_on']);
+                  //     echo '
+                      
+                  //       <a id="notice-'.$notification['event_id'].'"class="dropdown-item d-flex align-items-center notification '.(($notification['was_clicked'] == 1)? 'bg-light': '').'" href="'.base_url().'view-notification/'.$notification['id'].'" >
+                  //         <div class="mr-3">
+                  //           <div class="icon-circle '.$notification['icon_background_color'].'">
+                  //             <i class="'.$notification['icon'].' text-white"></i>
+                  //           </div>
+                  //         </div>
+                  //         <div>
+                  //           <div class="small text-gray-500">'.$date->format('F j, Y').'</div>
+                  //           '.$notification['notice_title'].' 
+                  //         </div>
+                  //       </a>
+                  //     ';
+                  //   }
+
+                  // }else{
+                  //   //no notifications
+                  //   echo '
+                  //   <a class="dropdown-item d-flex align-items-center" href="#">
+                  //     <div class="mr-3">
+                  //       <div class="icon-circle bg-info">
+                  //         <i class="fas fa-info text-white"></i>
+                  //       </div>
+                  //     </div>
+                  //     <div>
+                  //       <div class="small text-gray-500">'.date('F j, Y').'</div>
+                  //       No notifications you are up to date!
+                  //     </div>
+                  //   </a>
+                  //   ';
+                  // }
+                ?>
+              <h6 class="dropdown-footer">
+                  
+                </h6>
+          <!-- <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a> -->
               </div>
-            </li> -->
+            </li>
+
             <div class="topbar-divider d-none d-sm-block"></div>
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">

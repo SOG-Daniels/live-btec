@@ -3,7 +3,6 @@
   $actions = $this->session->userdata('action');
   echo (!empty($this->session->flashdata('message'))? $this->session->flashdata('message') : '');
 
-
 ?>
 <h1 class="h3 mb-2 text-gray-800">Enrolled List</h1>
 

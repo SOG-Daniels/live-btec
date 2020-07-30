@@ -15,11 +15,19 @@
 
     var calendarEl = document.getElementById('g-calendar');
     var calendar = null; 
+
+    //event id to pop up on notification click
+    var targetEvent = '';
+
 /////// END OF GLOBAL VARIABLES///////
 
 ////// START OF EVENT TRIGGERS //////
 
 
+function trigger_cal_event(eventId = null){
+    console.log('trigger_cal_event called outside of scope');
+    $('.fc-content#c-event-'+eventId).trigger('click');
+}
 
 // triggers on form submit by an Enter keypress
 $(document).on('submit','#eventForm',function(e){
@@ -110,7 +118,8 @@ $('#saveEvent').click( function (e){
                     location.reload(base_url+'login');
                 }else{
                     //console logs 0 / 1 represents if failed or was a successful update
-                    console.log(data);
+                    console.log('update event: ');
+                    console.log(JSON.parse(data));
                     calendar.refetchEvents();
                     $('#eventDescriptionModal').modal('hide');
 
@@ -122,7 +131,48 @@ $('#saveEvent').click( function (e){
            
         }
 });
+ // event click on a specific notification
+ $('#notification-list').on('click', '.notification', function(e){
+    e.preventDefault();
 
+    //getting calendar event id
+    var eventId = this.id.split('-');
+    var rediretTo = base_url+'dashboard';
+    var noticeId = $(this)[0].childNodes[0].value;
+    //console.log($("#"+this.id+":input").val());
+   
+    $.post( base_url+"main/notification_clicked/"+noticeId, function(data) {
+        if(data == -1){
+            //session expired
+            window.location.href = base_url+"login";
+        }else if (data == 0){
+            alert('Sorry, an Error occured!');
+        }else{
+            //calling calendar event
+            targetEvent = '';
+            if (window.location.href !== rediretTo && !window.location.href.includes('dashboard')){
+
+                targetEvent = '#c-event-'+eventId[1];
+                //sending user to the calendar
+                window.location.href = base_url+'dashboard/';
+            }else{
+                // console.log('triggering event');
+                //trigger event popup cause we are in dashboard
+                // $('.fc-content#c-event-'+eventId[1]).trigger('click');
+                trigger_cal_event(eventId[1]);
+
+            }
+        }
+        
+
+    });
+
+    
+   
+    
+    //triggering calendar event modal
+
+});
 ///// END OF EVENT TRIGGERS //////
 
 
@@ -209,8 +259,15 @@ function createFullCalendar(){
   
             calendar.unselect();
         },
+        eventRender: function (info) {
+            //setting id to event on calendar
+            info.el.children[0].id = 'c-event-'+info.event.id;
+          
+        },
         //when an event on the calendar is clicked
         eventClick: function (info){
+            
+            // console.log('event was clicked!');
             // console.log(info);
 
             info.jsEvent.preventDefault();

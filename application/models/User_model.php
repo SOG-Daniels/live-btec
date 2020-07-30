@@ -34,6 +34,70 @@ class User_model extends CI_Model{
     }
     /**
      * 
+     * Function will return all notifications pertaining to the user
+     *
+     * @access    public
+     * @param     userId is the ID of the user in the system
+     *
+     * @return    Array that contains a list of all the privileges by id
+     */    
+    public function get_all_user_notifications($userId = NULL){
+        
+        $this->db->trans_start();
+        $sql = $this->db->query('SELECT * FROM `notifications` n WHERE n.created_for = '.$userId.' and n.status = 1 ORDER BY `created_on` DESC');
+        $this->db->trans_complete();
+
+        if($this->db->trans_status() === FALSE){
+            return FALSE;
+        }
+        
+        return $sql->result_array();
+        
+
+    }
+    /**
+     * 
+     * Creates a notification for a user
+     *
+     * @access    public
+     * @param     data the insert data formated for insert
+     *
+     * @return    boolean determines the success of the query
+     */    
+    public function set_notification($data = NULL){ 
+        
+        $this->db->trans_start();
+        $this->db->insert('notifications', $data);
+        $this->db->trans_complete();
+
+        if($this->db->trans_status() === FALSE){
+            return FALSE;
+        }
+        return TRUE;
+
+    }
+    /**
+     * 
+     * Function will return all privileges if status is 1
+     *
+     * @access    public
+     *
+     * @return    boolean determines the success of the query
+     */    
+    public function update_notification($set = NULL, $where = NULL){ 
+        
+        $this->db->trans_start();
+        $this->db->update('notifications', $set, $where);
+        $this->db->trans_complete();
+
+        if($this->db->trans_status() === FALSE){
+            return FALSE;
+        }
+        return TRUE;
+
+    }
+    /**
+     * 
      * Function will return all privileges if status is 1
      *
      * @access    public
@@ -687,7 +751,7 @@ class User_model extends CI_Model{
 
         $this->db->trans_start();
 
-        $this->db->select('id, label, color, sendEmail');
+        $this->db->select('id, label, color, sendNotification');
         $this->db->where(array('status' => 1));
         $query = $this->db->get('event_labels');
 
@@ -725,7 +789,7 @@ class User_model extends CI_Model{
                         'label' => $input['name'],
                         'updated_by' => $this->session->userdata('userIdentity'),
                         'updated_on' => date("Y-m-d H:i:s"),
-                        'sendEmail'=> ((isset($input['sendEmail']) && $input['sendEmail'] == 1)? 1 : 0),
+                        'sendNotification'=> ((isset($input['sendNotification']) && $input['sendNotification'] == 1)? 1 : 0),
                         'status' => 1
                     ), array('id' => $input['id']));
 
@@ -733,7 +797,7 @@ class User_model extends CI_Model{
                     //new record 
                     $this->db->insert('event_labels', array(
                         'label' => $input['name'],
-                        'sendEmail'=> ((isset($input['sendEmail']) && $input['sendEmail'] == 1)? 1 : 0),
+                        'sendNotification'=> ((isset($input['sendNotification']) && $input['sendNotification'] == 1)? 1 : 0),
                         'color' => $input['color'],
                         'created_by' => $this->session->userdata('userIdentity') 
                     ));

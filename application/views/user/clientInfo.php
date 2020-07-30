@@ -10,9 +10,6 @@ $name = (isset($personalInfo['first_name']) && isset($personalInfo['last_name'])
 if (isset($clientData[0]['gender'])){
     $clientData[0]['gender'] = ($clientData[0]['gender'] == 'M')? 'Male' : 'Female';
 }
-// echo "<pre>";
-// print_r($clientData);
-// echo "</pre>";
 
 ?>
 <h1 class="h3 mb-2 text-gray-800">Client Information</h1>

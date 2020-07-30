@@ -127,8 +127,8 @@
         <div class="card-body">
         <form id="eventLabelForm" action="<?php echo base_url();?>save-event-labels/" method="POST">
         <div class="alert alert-secondary" role="alert">
-          <span><i class="fa fa-info-circle"></i></span> Enable notification so Users get notified upon events added or updated
-          for a particular label. (COMING SOON)
+          <span><i class="fa fa-info-circle"></i></span> Enable notification so ALL Users get notified upon a event update
+          for a particular label.
         </div>
         <span id="eventLabels">
         <?php 
@@ -140,7 +140,7 @@
                   <div class="row">
                     <div class="col-12 col-md-4">
                       <div class="form-check pt-2">
-                        <input type="checkbox" name="labels[label'.$num.'][sendEmail]" class="form-check-input" value="1" '.(($val['sendEmail'] == 1)? 'checked' : '').'>
+                        <input type="checkbox" name="labels[label'.$num.'][sendNotification]" class="form-check-input" value="1" '.(($val['sendNotification'] == 1)? 'checked' : '').'>
                         <label class="form-check-label">Enable Notification</label>
                       </div>
                     </div>
