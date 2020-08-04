@@ -1512,7 +1512,7 @@ class Client_model extends CI_Model{
         
         $this->db->trans_start();
 
-        $this->db->update('comments', array('status' => 0), array('id' => $commentId));
+        $this->db->update('comments', array('status' => 0), array('id' => $commentId, 'created_by' => $this->session->userdata('userid')));
        
         $this->db->trans_complete();
 

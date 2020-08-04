@@ -74,7 +74,6 @@ class User_model extends CI_Model{
             return FALSE;
         }
         return TRUE;
-
     }
     /**
      * 
@@ -599,6 +598,34 @@ class User_model extends CI_Model{
         return $sql->result_array();
 
     
+    }
+    /**
+     * function querys the event and user table to get data for the calendar 
+     *
+     * @access    public
+     * @param     NONE
+     * 
+     * @return    array of data for the calendar
+     */    
+    public function get_specific_cal_events($eventId = NULL) {
+    
+        $this->db->trans_start();
+        
+        $sql = $this->db->query('
+        SELECT * FROM events e
+        WHERE e.id = '.$eventId.' and e.status = 1
+        ');
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE){
+           
+            log_message('debug', 'get_cal_events user_model function returned false');
+            return FALSE;
+        }
+        
+        return $sql->result_array();
+        
     }
     /**
      * function querys the event and user table to get data for the calendar 

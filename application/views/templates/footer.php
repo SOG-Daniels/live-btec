@@ -514,12 +514,13 @@
           $( ".applicant" ).autocomplete({
             source: "<?php echo site_url('search?');?>"
           });
-
-          //calling notifcation count update every 1 seconds
+          
+          // calling notifcation count update every 1 seconds
           setInterval(function(){
             get_notification_count();
           },
           1000);
+
       });
      
   </script>

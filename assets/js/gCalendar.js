@@ -23,7 +23,6 @@
 
 ////// START OF EVENT TRIGGERS //////
 
-
 function trigger_cal_event(eventId = null){
     console.log('trigger_cal_event called outside of scope');
     $('.fc-content#c-event-'+eventId).trigger('click');
@@ -89,6 +88,7 @@ $('#deleteEvent').click( function (e){
             success:function(data)
             {
                 //console logs 0 / 1 represents if failed or successful deletion
+                console.log('Deleted Notifaction called: ')
                 console.log(data);
                 calendar.refetchEvents();
                 $('#eventDescriptionModal').modal('hide');
@@ -113,13 +113,16 @@ $('#saveEvent').click( function (e){
             data: formData,
             success:function(data)
             {
-                if (data == 'logged out'){
+                if (data == -1){
+                    //no post sent
+                    location.reload(base_url+'dashboard');
+                }else if(data == 'session expired'){
                     // session has expired
                     location.reload(base_url+'login');
                 }else{
                     //console logs 0 / 1 represents if failed or was a successful update
                     console.log('update event: ');
-                    console.log(JSON.parse(data));
+                    console.log(data);
                     calendar.refetchEvents();
                     $('#eventDescriptionModal').modal('hide');
 
@@ -181,6 +184,12 @@ $(document).ready(function (){
     
         //creating the calendar
         createFullCalendar();
+
+        // refetching event for calendar every 1 seconds
+        setInterval(function() {
+        reload_calendar();
+        }, 
+        1000);
     
 });
 
@@ -370,6 +379,14 @@ function createFullCalendar(){
         calendar.render();
     }
 
+}
+
+function reload_calendar(){
+    var dashboard = base_url+'dashboard';
+    if (window.location.href === dashboard && window.location.href.includes('dashboard')){
+        //reloading calendar
+        calendar.refetchEvents();
+    }
 }
     
 

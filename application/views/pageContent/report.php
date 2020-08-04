@@ -8,7 +8,7 @@
 
 ?>
 <h1 class="h3 mb-2 text-gray-800">Generate a Report</h1>
-<div class="card">
+<div class="card shadow-lg  ">
     <div class="card-header">
         <h6 class=" font-weight-bold text-primary">Advance Search</h6>
     </div>
@@ -64,7 +64,7 @@
     </form>
 </div>
 <br>
-<div class="card">
+<div class="card shadow-lg">
     <div class="card-header">
         <h6 class=" font-weight-bold text-primary">Report Options</h6>
        

@@ -11,7 +11,7 @@
  echo (!empty($this->session->flashdata('message'))? $this->session->flashdata('message') : '');
 ?>
 <a href="<?php echo base_url().'client-info/'.$programInfo[0]['client_id']; ?>" class="btn btn-link "><i class="fa fa-arrow-left"></i> Go to View Client Profile</a>
-<div class="card">
+<div class="card shadow-lg">
     <?php
         //@param 1 action location one form is submitted
         //@param 2 attributes for the form tag
@@ -149,7 +149,7 @@
     </form>
 </div>
 <br>
-<div class="card">
+<div class="card shadow-lg">
     <div class="card-header">
         <h5 class="m-0 font-weight-bold text-primary">File Management</h5>
     </div>
@@ -164,7 +164,8 @@
     </div>
 </div>
 <br>
-<div class="card" style="display: <?php echo ((in_array(13, $this->session->userdata('action')) || in_array(14, $this->session->userdata('action')))? 'block': 'none')?>;">
+
+<div class="card shadow-lg" style="display: <?php echo ((in_array(13, $this->session->userdata('action')) || in_array(14, $this->session->userdata('action')))? 'block': 'none')?>;">
     <div class="card-header">
         <h5 class="m-0 font-weight-bold text-primary">Comments</h5>
     </div>
@@ -172,7 +173,7 @@
         <div class="form-group" style="display: <?php echo (in_array(13, $this->session->userdata('action')) ? 'block': 'none')?>;">
             <div class="row ">
                 <div class="col-4 col-md-1" >
-                    <img class="rounded-circle" src="<?php echo base_url().$this->session->userdata('imgPath');?>" alt="Profile Pic" width="70%" hight="auto">
+                    <img class="rounded-circle" src="<?php echo base_url().$this->session->userdata('imgPath');?>" alt="Profile Pic" width="75%" hight="auto">
                 </div>
                     <label for="profileName" class="font-weight-bold d-block d-md-none pt-3"><?php echo $this->session->userdata('name');?></label>
                 <div class="col-12 col-md-11" >
@@ -220,7 +221,7 @@
                     echo '
                         <div class="row">
                             <div class="col-4 col-md-1" >
-                                <img class="rounded-circle" src="'.base_url().$commentData['userProfilePic'].'" alt="Profile Pic" width="70%" hight="auto">
+                                <img class="rounded-circle" src="'.base_url().$commentData['userProfilePic'].'" alt="Profile Pic" width="75%" hight="auto">
                             </div>
                                 <label for="profileName" class="font-weight-bold d-block d-md-none pt-1">'.$commentData['fname'].' '.$commentData['lname'].''.($commentData['userId'] === $this->session->userdata('userid')? '<br>'.$actions : '').'</label>
                                 <div class="col-12 col-md-11" >

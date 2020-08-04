@@ -145,7 +145,7 @@
         public function get_dashboard(){//$calEventId = NULL){
     
             if( $this->is_session_set()){
-               
+              
                 // $this->data['notifications'] = $this->notifications;
                 // $this->data['activeNotificationCount'] = $this->activeNotificationCount;
                 $this->data['title'] = 'Dashboard';// title of page
@@ -2964,20 +2964,6 @@
                      
                     if ($result === TRUE){
                         //succesfully added event to calendar
-                        // $labels = $this->user_model->get_event_labels();
-
-                        // $found = false;
-                        // foreach ($labels as $key => $arr){
-                        //     $found = array_search($this->input->post('color'), $key);
-                        //     if ($found){
-                        //         $found = $key;
-                        //         break;
-                        //     }
-                        // }
-                        // if ($found['sendEmail'] == 1){
-                        //     //sending email 
-
-                        // }
                         echo 1;
                     }else{
                         echo 0;
@@ -3004,19 +2990,46 @@
                 
                 if (!empty($this->input->post('eventId'))){
 
-                $result = $this->user_model->delete_cal_event($this->input->post('eventId', TRUE));
+                    //getting event details
+                    $eventDetails = $this->user_model->get_specific_cal_events($this->input->post('eventId'));
+                    
+                    //removing event
+                    $result = $this->user_model->delete_cal_event($this->input->post('eventId', TRUE));
                     
                     if ($result === TRUE){
-                        echo 1;
+                        $label = array();
+
+                        //getting all event Labels
+                        $labels = $this->user_model->get_event_labels();
+                        
+                        //finding the event label the updated event has
+                        foreach ($labels as $key => $array){
+                            if ($eventDetails[0]['color'] == $array['color']){
+                                $label = $labels[$key];
+                                break;
+                            }
+                        }
+                        if ($label['sendNotification'] == 1){
+                            //notifications enabeled for label
+                            $data = array(
+                                'eventId' => $this->input->post('eventId'),
+                                'icon' => 'fas fa-exclamation-triangle',
+                                'icon_background_color' => 'bg-warning',
+                                'notice_title' => 'A "<span style="color: '.$label['color'].';">'.$eventDetails[0]['title'].'</span>" event was removed! Click to go to Calendar.',
+                            );
+
+                            if(!$this->notify_all_users($data)){
+                                log_message('debug', 'Error, did not notify all users upon cal event update');
+                            }else{
+                                echo 'notifications sent to all users';
+                            }
+                        }
                     }else{
                         echo 0;
                     }
-                    // print_r($this->input->post());
-
                 }else{
                     redirect('dashboard');
                 }
-
             }else{
                 redirect('login');
             }
@@ -3054,42 +3067,80 @@
                             }
                         }
                         if ($label['sendNotification'] == 1){
-                            //set notification
-                        }
-                        //setting notifications for all users
-                        $users = $this->user_model->get_user_list();
-                        
-                        foreach ($users as $key => $user){
-                            //inserting notifications for user
-                            if ($user['status'] == 1){
-                                $insert = array(
-                                    'event_id' => $this->input->post('eventId'),
-                                    'icon' => 'fas fa-calendar-alt',
-                                    'icon_background_color' => 'bg-info',
-                                    'notice_title' => 'A "<span style="color: '.$label['color'].';">'.$this->input->post('title').'</span>" event was updated! Click to see event.',
-                                    'created_for' => $user['id']
-                                );
-                                $result = $this->user_model->set_notification($insert);
-                                
-                                if(!$result){
-                                    log_message('debug', 'Notification was not set for userID: '.$user['id'].',occured in update_cal_event inside main controller');
+                            //notifications enabled for label
+
+                            $data = array(
+                                'eventId' => $this->input->post('eventId'),
+                                'icon' => 'fas fa-calendar-alt',
+                                'icon_background_color' => 'bg-info',
+                                'notice_title' => 'A "<span style="color: '.$label['color'].';">'.$this->input->post('title').'</span>" event was updated! Click to go to Calendar.',
+                            );
+
+                            $notificationSet = $this->notify_all_users($data);
+                            
+                            if(!$notificationSet){
+                                log_message('debug', 'Error, did not notify all users upon cal event update');
+                            }else{
+                                if ($notificationSet == -1){
+                                    //returned -1, session not set
+                                    echo -1;
+                                }else{
+                                    //success
+                                    echo "notification sent to all users";
                                 }
+
                             }
-                                
+                        }else{
+                            echo 'notifications not enabled';
                         }
-                        // echo json_encode($users);
-                        // echo json_encode($label);
-                        echo 1;
                     }else{
                         echo 0;
                     }
 
                 }else{
-                    redirect('dashboard');
+                    // redirect('dashboard');
+                    echo -1;
                 }
 
             }else{
-                echo 'logged out';
+                echo 'session expired';
+            }
+        }
+        /* Will notify all active users in the database
+        *
+        * @access    public
+        * @param     data an array that would be used to create the notification record for the user
+        *
+        * @return    NONE
+        */    
+        public function notify_all_users($data = NULL){
+       
+            if ($data != NULL){
+                //setting notifications for all users, 
+                $users = $this->user_model->get_user_list();
+                
+                foreach ($users as $key => $user){
+                //     //inserting notifications for user
+                   
+                    if ($user->status == 1){
+                        $insert = array(
+                            'event_id' => $data['eventId'],
+                            'icon' => $data['icon'],
+                            'icon_background_color' => $data['icon_background_color'],
+                            'notice_title' => $data['notice_title'],
+                            'created_for' => $user->id
+                        );
+                        $result = $this->user_model->set_notification($insert);
+                        
+                        if(!$result){
+                            log_message('debug', 'Notification was not set for userID: '.$user->id.', occured in notify_all_users inside main controller');
+                            return FALSE;
+                        }
+                    }
+                }
+            }else{
+                //data was not set
+                echo 0;
             }
         }
         /* searches  based on option picked 
