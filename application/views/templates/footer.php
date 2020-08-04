@@ -506,23 +506,57 @@
       var PRIVI_SIZE = <?php echo (!empty($this->session->userdata('allPrivi'))? count($this->session->userdata('allPrivi')) : 0);?>;
 
 
-      //setting up autocomplete by stating the controller that will perform the search
-      //the autocomplete plugin will always submit it as a GET method reason being for having the '?' after the 'search'
       $(document).ready(function(e){
-        
-          //autocompletes search bar
-          $( ".applicant" ).autocomplete({
-            source: "<?php echo site_url('search?');?>"
-          });
-          
-          // calling notifcation count update every 1 seconds
-          setInterval(function(){
-            get_notification_count();
-          },
+       
+        if (window.location.href.includes('dashboard')){
+          //we are currently in the dashboard load calendar
+
+          let wasCreated = createFullCalendar();
+
+          if (wasCreated){
+            calendar.refetchEvents();
+          }
+
+          // refetching event for calendar every 1 seconds
+          setInterval(function() {
+          reload_calendar();
+          }, 
           1000);
+        }
+        checkIfEventHasRendered();
+
+        //setting up autocomplete by stating the controller that will perform the search
+        //the autocomplete plugin will always submit it as a GET method reason being for having the '?' after the 'search'
+        $( ".applicant" ).autocomplete({
+          source: "<?php echo site_url('search?');?>"
+        });
+        
+        // calling notifcation count update every 1 seconds
+        setInterval(function(){
+          get_notification_count();
+        },
+        1000);
 
       });
-     
+      function checkIfEventHasRendered() {
+        if (window.location.href.includes('#c-event-')){
+          //hard reload, getting file from server not cache
+          let str = window.location.href.split('#');
+          let event = str[1].split('-')
+          
+          if($(".fc-content#c-event-"+event[2]).length) {
+              // alert("Event has rendered!");
+              console.log($(".fc-content#c-event-"+event[2]));
+              trigger_cal_event(event[2]);
+              
+          } else {
+              setTimeout(function() {
+                checkIfEventHasRendered();
+              }, 5);
+          }
+        }
+      }
+      
   </script>
     
 </body>

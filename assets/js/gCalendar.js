@@ -23,10 +23,6 @@
 
 ////// START OF EVENT TRIGGERS //////
 
-function trigger_cal_event(eventId = null){
-    console.log('trigger_cal_event called outside of scope');
-    $('.fc-content#c-event-'+eventId).trigger('click');
-}
 
 // triggers on form submit by an Enter keypress
 $(document).on('submit','#eventForm',function(e){
@@ -157,11 +153,10 @@ $('#saveEvent').click( function (e){
 
                 targetEvent = '#c-event-'+eventId[1];
                 //sending user to the calendar
-                window.location.href = base_url+'dashboard/';
+                // window.location.href = base_url+'dashboard/#c-event-'+eventId[1];
+                window.location.replace(base_url+'dashboard/#c-event-'+eventId[1]);
             }else{
-                // console.log('triggering event');
-                //trigger event popup cause we are in dashboard
-                // $('.fc-content#c-event-'+eventId[1]).trigger('click');
+                
                 trigger_cal_event(eventId[1]);
 
             }
@@ -180,18 +175,18 @@ $('#saveEvent').click( function (e){
 
 
 
-$(document).ready(function (){
+// $(document).ready(function (){
     
-        //creating the calendar
-        createFullCalendar();
+//      //create the calendar
+//      createFullCalendar();
 
-        // refetching event for calendar every 1 seconds
-        setInterval(function() {
-        reload_calendar();
-        }, 
-        1000);
+//      // refetching event for calendar every 1 seconds
+//      setInterval(function() {
+//      reload_calendar();
+//      }, 
+//      1000);
     
-});
+// });
 
 
 ///// START OF FUNCTION DECLARATION /// 
@@ -375,19 +370,29 @@ function createFullCalendar(){
     });
 
     //loading the fullCalendar with all defined proporties
+    // if (calendar != null && window.location.href.includes('dashboard')){
     if (calendar != null){
         calendar.render();
+        return true;
     }
+    return false;
+    // }
 
 }
 
 function reload_calendar(){
     var dashboard = base_url+'dashboard';
     if (window.location.href === dashboard && window.location.href.includes('dashboard')){
+        // console.log('Refetching events for calendar!')
         //reloading calendar
         calendar.refetchEvents();
     }
 }
-    
+//triggers a calendar event
+function trigger_cal_event(eventId = null){
+    console.log('triggering event: ' + eventId);
+    console.log($('.fc-content#c-event-'+eventId));
+    $('.fc-content#c-event-'+eventId).trigger('click');
+}
 
        

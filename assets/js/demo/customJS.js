@@ -32,7 +32,7 @@ function get_notification_count(){
             $('#notification-count').text(result.activeNotificationCount);
         }else{
             $('#notification-count').hide();
-            console.log('no notifications available');
+            // console.log('no notifications available');
         }
     });
 }
